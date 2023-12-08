@@ -1,9 +1,8 @@
 import {Table} from "antd";
 import {IColumn, IUser} from "../../types";
 import {getTableData} from "../../utils/utils";
-import {useEffect, useContext} from "react";
-import {addTheadListener, removeTheadListener, tbodyListener} from "../../utils/listener";
-import AppContext from "../../context/AppContext";
+import {useEffect, useContext, useState} from "react";
+import {addTheadListener, removeTbodyListener, removeTheadListener, tbodyListener} from "../../utils/listener";
 import {sortByBalance, sortByIsActive, sortByKey} from "../../utils/sort";
 
 const ParentChildTable =
@@ -12,23 +11,18 @@ const ParentChildTable =
       columns,
       setUsers,
       setClickedUser,
-      setIsActive,
-      setBalanceStatus,
-      setEmailStatus,
-      setNameStatus
     }: {
       users: IUser[];
       columns: IColumn[];
       setUsers: any;
       setClickedUser: any;
-      setIsActive: any;
-      setBalanceStatus: any;
-      setEmailStatus: any;
-      setNameStatus: any;
  }) => {
-  const { isActive, balance , email, name} = useContext(AppContext);
+    const [isActive, setIsActive] = useState(false);
+    const [balanceStatus, setBalanceStatus] = useState(false);
+    const [emailStatus, setEmailStatus] = useState(false);
+    const [nameStatus, setNameStatus] = useState(false);
 
-  useEffect(() => {
+    useEffect(() => {
     const handleSort = (key:string) => {
       switch (key) {
         case "isActive": {
@@ -38,19 +32,19 @@ const ParentChildTable =
           break;
         }
         case "balance": {
-          const sortedUsers = sortByBalance(users, balance);
+          const sortedUsers = sortByBalance(users, balanceStatus);
           setUsers([...sortedUsers]);
           setBalanceStatus((prevState:boolean) => !prevState);
           break;
         }
         case "email": {
-          const sortedUsers = sortByKey(users, 'email', email);
+          const sortedUsers = sortByKey(users, 'email', emailStatus);
           setUsers([...sortedUsers]);
           setEmailStatus((prevState:boolean) => !prevState);
           break;
         }
         case "Name": {
-          const sortedUsers = sortByKey(users, 'name', name);
+          const sortedUsers = sortByKey(users, 'name', nameStatus);
           setUsers([...sortedUsers]);
           setNameStatus((prevState:boolean) => !prevState);
           break;
@@ -58,20 +52,25 @@ const ParentChildTable =
       }
     };
 
+    const handleDetails = (user:IUser) => {
+        setClickedUser(user)
+    }
+
     addTheadListener(handleSort);
-    tbodyListener(setClickedUser);
+    tbodyListener(handleDetails);
 
     return () => {
       removeTheadListener();
+      removeTbodyListener();
     };
-  }, [users, isActive, setUsers, setIsActive, balance, setBalanceStatus]);
+  }, [users]);
 
-  const config = {
-    dataSource: getTableData(users),
-    columns: columns,
-  };
+    const config = {
+        dataSource: getTableData(users),
+        columns: columns,
+    };
 
-  return <Table {...config} style={{ flex: 1 }}></Table>;
+    return <Table {...config} style={{ flex: 1 }}></Table>;
 };
 
 export default ParentChildTable;

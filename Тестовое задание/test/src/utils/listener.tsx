@@ -2,6 +2,7 @@ import {getFilteredUserById, getTableData} from "./utils";
 import data from '../data/default'
 
 let theadClickListener: EventListenerOrEventListenerObject | null = null;
+let tbodyClickListener: EventListenerOrEventListenerObject | null = null;
 
 export const addTheadListener = (cb:any) => {
     const container = document.querySelector('.ant-table-thead') || null;
@@ -27,11 +28,11 @@ export const removeTheadListener = () => {
     }
 };
 
-export const tbodyListener = (setClickedUser: any) => {
+export const tbodyListener = (cb:any) => {
     const container = document.querySelector('.ant-table-tbody') || null;
 
     if (container) {
-        container.addEventListener('click', (event) => {
+        tbodyClickListener = (event) => {
             const target = event.target as HTMLElement;
             const totalTarget = target.closest('.ant-table-row-level-0') as HTMLElement;
             const id = Number(totalTarget?.dataset?.rowKey);
@@ -39,7 +40,18 @@ export const tbodyListener = (setClickedUser: any) => {
             const users = getTableData(data);
 
             const user = getFilteredUserById(users, id);
-            setClickedUser(user)
-        })
+            return cb(user)
+        }
+
+        container.addEventListener('click', tbodyClickListener);
+    }
+}
+
+export const removeTbodyListener = () => {
+    const container = document.querySelector('.ant-table-tbody') || null;
+
+    if (container && tbodyClickListener) {
+        container.removeEventListener('click', tbodyClickListener);
+        tbodyClickListener = null;
     }
 }
