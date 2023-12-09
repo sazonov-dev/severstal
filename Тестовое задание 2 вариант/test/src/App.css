@@ -1,0 +1,5 @@
+.app-container {
+  padding: 20px 10px;
+  display: flex;
+  gap: 20px;
+}

@@ -1,7 +1,7 @@
 import {Table} from "antd";
 import {IColumn, IUser} from "../../types";
 import {getTableData} from "../../utils/utils";
-import {useEffect, useContext, useState} from "react";
+import {useEffect, useState} from "react";
 import {addTheadListener, removeTbodyListener, removeTheadListener, tbodyListener} from "../../utils/listener";
 import {sortByBalance, sortByIsActive, sortByKey} from "../../utils/sort";
 
